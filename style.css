@@ -56,8 +56,7 @@ body {
   background-color: gray;
 }
 
-.active,
-.filter-button:active {
+.active {
   background-color: black;
   color: white;
 }

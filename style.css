@@ -52,10 +52,6 @@ body {
   cursor: pointer;
 }
 
-.filter-button:hover {
-  background-color: gray;
-}
-
 .active {
   background-color: black;
   color: white;
@@ -83,13 +79,32 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-
-#news-wrapper:first-child {
+#all-news #news-wrapper:nth-child(1) {
   grid-column: 1 / span 2;
   width: 100%;
 }
 
-/* Compact & Clean Responsive Styles */
+.news-description {
+  max-height: 200px;
+  overflow: scroll;
+  text-overflow: ellipsis;
+}
+
+.show-more-button {
+  margin-top: 1rem;
+  background-color: black;
+  color: white;
+  border: none;
+  outline: none;
+  padding: 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.searched-data {
+  color: tomato;
+}
+
 @media (max-width: 1024px) {
   .heading {
     font-size: 1.8rem;

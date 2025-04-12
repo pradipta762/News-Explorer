@@ -351,9 +351,12 @@ const data = [
   },
 ];
 
-data.sort((data1, data2) => {
-  if(data1.dateAndTime > data2.dateAndTime) return 1;
-  if(data1.dateAndTime < data2.dateAndTime) return -1;
+const sortedData = [...data].sort((data1, data2) => {
+  const firstDate = data1.dateAndTime.split(",")[0];
+  const secondDate = data2.dateAndTime.split(",")[0];
+  console.log(firstDate, secondDate)
+  if (firstDate > secondDate) return 1;
+  if (firstDate < secondDate) return -1;
   return 0;
 })
 
@@ -378,29 +381,29 @@ const showNews = (dataToBeShown) => {
     const newsHeading = document.createElement('h2')
     const newsDate = document.createElement('p')
     const newsDescription = document.createElement('p')
-  
+
     newsHeading.textContent = news.title;
     newsHeading.classList.add("news-heading")
 
-    newsDate.textContent = new Date(news.dateAndTime).toLocaleDateString();
+    newsDate.textContent = news.dateAndTime.split(",")[0];
     newsDate.classList.add("news-date")
 
     newsDescription.textContent = news.content;
     newsDescription.classList.add("news-description")
-  
+
     newsWrapper.append(newsHeading, newsDate, newsDescription)
     allNews.appendChild(newsWrapper)
   })
 }
 
 // Initially, it would display only 7 news
-showNews(data.slice(0, 7))
+showNews(sortedData.slice(0, 7))
 
 newsContainer.append(allNews, showMoreButton)
 
 // Functionality for the show more button
 showMoreButton.addEventListener('click', () => {
-  showNews(data);
+  showNews(sortedData);
 })
 
 // De-bouncing search
@@ -414,17 +417,17 @@ const debouncingSearch = (searchFunction, timeOut = 1000) => {
 
 // Functionality to search
 const searchNews = (searchValue) => {
-  const filteredData = data.filter(news => 
-    news.content.toLowerCase().includes(searchValue) || 
+  const filteredData = sortedData.filter(news =>
+    news.content.toLowerCase().includes(searchValue) ||
     news.title.toLowerCase().includes(searchValue));
 
-  filteredData.forEach(data => {
-    if(data.content.toLocaleLowerCase() === searchValue) {
-      data.content.style.color = "orange"
-    } else if (data.title.toLocaleLowerCase() === searchValue) {
-      data.title.style.color = "orange"
-    }
-  })
+  // filteredData.forEach(searchedData => {
+  //   if (searchedData.content.toLocaleLowerCase() === searchValue) {
+  //     console.log(searchedData.content[4])
+  //   } else if (searchedData.title.toLocaleLowerCase() === searchValue) {
+  //     searchedData.title.style.color = "orange"
+  //   }
+  // })
   showNews(filteredData);
 }
 
@@ -439,19 +442,20 @@ searchInput.addEventListener('keyup', (e) => {
 
 // Functionality for the filter tags
 filterButtonContainer.addEventListener('click', (event) => {
+  if (event.target.tagName === "BUTTON") {
+    const clicked = event.target;
+    const clickedTag = event.target.textContent;
 
-  const clicked = event.target;
-  const clickedTag = event.target.textContent;
+    if (clickedTag === "All") {
+      filterButtons.forEach(button => button.classList.remove('active'))
+      clicked.classList.add('active')
+      showNews(sortedData.slice(0, 7));
+      return;
+    }
 
-  if(clickedTag === "All") {
-    filterButtons.forEach(button => button.classList.remove('active'))
-    clicked.classList.add('active')
-    showNews(data.slice(0, 7));
-    return;
-  } 
-
-  clicked.classList.toggle('active');
-  let catagoryWiseFilteredData = data.filter(news => news.category.includes(clickedTag.toLowerCase()))
-  filterButtons[0].classList.remove('active')
-  showNews(catagoryWiseFilteredData);
+    clicked.classList.toggle('active');
+    let catagoryWiseFilteredData = sortedData.filter(news => news.category.includes(clickedTag.toLowerCase()))
+    filterButtons[0].classList.remove('active')
+    showNews(catagoryWiseFilteredData);
+  }
 })

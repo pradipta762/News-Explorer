@@ -354,7 +354,7 @@ const data = [
 const sortedData = [...data].sort((data1, data2) => {
   const firstDate = data1.dateAndTime.split(",")[0];
   const secondDate = data2.dateAndTime.split(",")[0];
-  console.log(firstDate, secondDate)
+
   if (firstDate > secondDate) return 1;
   if (firstDate < secondDate) return -1;
   return 0;
@@ -382,13 +382,13 @@ const showNews = (dataToBeShown) => {
     const newsDate = document.createElement('p')
     const newsDescription = document.createElement('p')
 
-    newsHeading.textContent = news.title;
+    newsHeading.innerHTML = news.title;
     newsHeading.classList.add("news-heading")
 
-    newsDate.textContent = news.dateAndTime.split(",")[0];
+    newsDate.innerHTML = news.dateAndTime.split(",")[0];
     newsDate.classList.add("news-date")
 
-    newsDescription.textContent = news.content;
+    newsDescription.innerHTML = news.content;
     newsDescription.classList.add("news-description")
 
     newsWrapper.append(newsHeading, newsDate, newsDescription)
@@ -415,20 +415,32 @@ const debouncingSearch = (searchFunction, timeOut = 1000) => {
   }
 }
 
+const highlightSearchedText = (searchValue, text) => {
+  if (!text || !searchValue) return text;
+
+  // Escape regex special chars from search value
+  const escapedSearch = searchValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(escapedSearch, 'gi');
+
+  // Replace all matches with a highlighted span
+  return text.replace(regex, match => `<span class="searched-text">${match}</span>`);
+}
+
 // Functionality to search
 const searchNews = (searchValue) => {
   const filteredData = sortedData.filter(news =>
     news.content.toLowerCase().includes(searchValue) ||
-    news.title.toLowerCase().includes(searchValue));
+    news.title.toLowerCase().includes(searchValue)
+  );
+  
+  // Function to highlight the searched Text
+  const highlightedData = filteredData.map(news => ({
+    ...news,
+    title: highlightSearchedText(searchValue, news.title),
+    content: highlightSearchedText(searchValue, news.content)
+  }))
 
-  // filteredData.forEach(searchedData => {
-  //   if (searchedData.content.toLocaleLowerCase() === searchValue) {
-  //     console.log(searchedData.content[4])
-  //   } else if (searchedData.title.toLocaleLowerCase() === searchValue) {
-  //     searchedData.title.style.color = "orange"
-  //   }
-  // })
-  showNews(filteredData);
+  showNews(highlightedData);
 }
 
 // Debounced Search 
